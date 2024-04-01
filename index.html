@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title></title>
+</head>
+<style>
+  * {
+    margin: 0;
+  }
+  
+  body {
+    color: black;
+    background: transparent;
+    font-family: sans-serif;
+  }
+
+  #fruit,
+  p, h1 {
+    padding: 0;
+    margin: 0;
+  }
+
+  #desc {
+    position: fixed;
+    font-size: 45px;
+    margin: 0;
+    padding: 0;
+    z-index: 3;
+    user-select: none;
+    --moz-user-select: none;
+    visibility: hidden;
+  }
+
+  .fruit {
+    position: fixed;
+    animation-timing-function: ease;
+    animation-iteration-count: infinite;
+    animation-duration: 1s;
+    font-size: 50px;
+  }
+  
+  #gameover {
+    position: fixed;
+    z-index: 3;
+    background: red;
+    color: black;
+    visibility: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+  
+  #gameover #text {
+    margin-top: 50vh;
+    text-align: center;
+  }
+
+  #sc {
+    visibility: hidden;
+  }
+</style>
+
+<body>
+  <!-- <button style="position: fixed; top: 0; left: 0; border: solid 1px; background: white;" onclick="newFruit()">New Fruit</button><span style="position: fixed; top: 0; left: 75px;">Click the fruits!</span> --->
+  <!--- <h1 id="fruit">🍌</h1> --->
+  <span id="desc">💥</span>
+  <div id="gameover">
+    <div id="text">
+      <h1>GAME OVER</h1>
+    </div>
+  </div>
+  <div id="sc">
+    <span style="z-index: 3; position: fixed; bottom: 10px; left: 10px;">Score: <b><span id="score">0</span></b></span>
+    <a style="z-index: 3; color: black; position: fixed; bottom: 10px; right: 10px;" href="https://github.com/Yonle/FruitShot">Source code</a>
+  </div>
+</body>
+<script src="main.js"></script>
+<script>
+  let rn = rn => (Math.floor(Math.random() * 10) + 1);
+  let fruits = ["🍇", "🍈", "🍉", "🍊", "🍋", "🍌", "🍍", "🍎", "🍏", "🍒", "🍓", "🥝", "🍅", "🥥", "🥑", "🍆", "🥔", "🥕", "🌽", "🌶", "️🥒", "🥦", "🍄", "🥜", "🌰"];
+  let firstTime = 1;
+  let hitAmount = 0;
+  let maxHit = 5;
+  let score = 0;
+  let onPowerUp = false;
+  let pwTimeout = null;
+  //let rn = rn => 1;
+  
+  let desc = document.getElementById("desc");
+  window.onclick = (p) => {
+    if (firstTime) {
+      loadAud();
+      firstTime = false;
+      return;
+    }
+    sh();
+    desc.style.visibility = "visible";
+    desc.style.top = (p.clientY-30) + "px";
+    desc.style.left = (p.clientX-30) + "px";
+    setTimeout(() => {
+      desc.style.visibility = "hidden";
+    }, 20);
+  }
+  
+  function newFruit(bomb, isPowerUp) {
+    let f = document.createElement("span");
+    f.innerText = bomb ? "💣" : fruits[Math.floor(Math.random() * fruits.length)];
+    if (isPowerUp) f.innerText = "🌟";
+    f.style.position = "fixed";
+    f.style.margin = 0;
+    f.style.padding = 0;
+    f.style["font-size"] = "50px";
+    f.style.MozUserSelect = "none";
+    f.style["user-select"] = "none";
+    if (bomb) f.style["z-index"] = 2;
+    document.body.appendChild(f);
+
+    handleFruit(f, bomb, isPowerUp);
+  }
+
+  function handleFruit(f, bomb, isPowerUp) {
+    let ps = {
+      t: 0,
+      l: 0,
+      sp: {
+        t: rn(),
+        l: rn()
+      }
+    }
+
+    let ct = {
+      t: 0,
+      l: 0
+    }
+    
+    let fs = 10;
+
+    //let stat = document.createElement('p');
+    //document.body.appendChild(stat);
+    let int = setInterval(() => {
+      if (hitAmount >= maxHit) {
+        document.body.removeChild(f);
+        return clearInterval(int);
+      }
+      if (ps.t >= window.innerHeight) {
+        ct.t = 1;
+        ps.sp.t = rn();
+      } else if (ps.t <= 0) {
+        ct.t = 0;
+        ps.sp.t = rn();
+      }
+
+      if (ps.l >= window.innerWidth) {
+        ct.l = 1;
+        ps.sp.l = rn();
+      } else if (ps.l <= 0) {
+        ct.l = 0;
+        ps.sp.l = rn();
+      }
+
+      if (ct.t) ps.t = ps.t - ps.sp.t;
+      else ps.t = ps.t + ps.sp.t;
+      if (ct.l) ps.l = ps.l - ps.sp.l;
+      else ps.l = ps.l + ps.sp.l;
+
+      f.style.top = ps.t + "px";
+      f.style.left = ps.l + "px";
+      //stat.innerText = JSON.stringify(ps);
+    }, 20);
+    
+    f.onclick = () => {
+      if (hitAmount >= maxHit) return;
+
+      if (isPowerUp) {
+        onPowerUp = true;
+        document.getElementById("sc").style.color = "darkgreen";
+        document.body.style.background = "lightgreen";
+        clearTimeout(pwTimeout);
+        pwTimeout = setTimeout(() => {
+          onPowerUp = false
+          document.getElementById("sc").style.color = "";
+        }, 10000);
+        pw();
+
+        document.body.removeChild(f);
+        return;
+      }
+
+      if (bomb && !isPowerUp) {
+        bm();
+
+        clearInterval(int);
+        document.body.style.background = "orange";
+
+        f.style["font-size"] = "160px";
+        f.style.top = (ps.t-60) + "px";
+        f.style.left = (ps.l-60) + "px";
+        f.innerText = "💥";
+        setTimeout(_ => {
+          document.body.removeChild(f);
+          document.body.style.background = "transparent";
+
+          if (onPowerUp) return;
+        
+          sc();
+
+          window.onclick = null;
+          hitAmount = maxHit;
+          document.documentElement.style.background = "black";
+          document.getElementById("gameover").style.visibility = "visible";
+        }, 50);
+
+        return;
+      }
+
+      fs += 30;
+      if (f.innerText === "☠️") {
+        ps.t -= 20;
+        ps.l -= 20;
+        f.style.top = ps.t + "px";
+        f.style.left = ps.l + "px";
+        f.style["z-index"] = 2;
+        
+        if (fs > 150) {
+          f.onclick = null;
+          f.style["z-index"] = 3;
+          // hitAmount++
+          document.body.style.background = "orange";
+          f.innerText = "💥";
+          setTimeout(_ => {
+            document.body.removeChild(f);
+            document.body.style.background = "transparent";
+          }, 50);
+          
+          if (!onPowerUp)
+            for (let i = 0; i < 2; i++) newFruit(true); // drop 2 bombs
+          return bm();
+        }
+        
+        ht();
+        return f.style["font-size"] = fs + "px";
+      } else {
+        score++;
+        document.getElementById("score").innerText = score;
+        document.getElementById("sc").style.visibility = "visible";
+
+        if ((score % 20) === 0) newFruit(true, true); // drop a star
+      }
+      clearInterval(int);
+      f.innerText = "☠️";
+      if (!isPowerUp) newFruit();
+    }
+  }
+
+  for (let i = 0; i < 10; i++) newFruit();
+</script>
+
+</html>
