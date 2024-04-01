@@ -84,7 +84,7 @@
   let hitAmount = 0;
   let maxHit = 5;
   let score = 0;
-  let onPowerUp = false;
+  let onSuper = false;
   let pwTimeout = null;
   //let rn = rn => 1;
   
@@ -104,10 +104,10 @@
     }, 20);
   }
   
-  function newFruit(bomb, isPowerUp) {
+  function newFruit(bomb, isSuper) {
     let f = document.createElement("span");
     f.innerText = bomb ? "💣" : fruits[Math.floor(Math.random() * fruits.length)];
-    if (isPowerUp) f.innerText = "🌟";
+    if (isSuper) f.innerText = "🌟";
     f.style.position = "fixed";
     f.style.margin = 0;
     f.style.padding = 0;
@@ -117,10 +117,10 @@
     if (bomb) f.style["z-index"] = 2;
     document.body.appendChild(f);
 
-    handleFruit(f, bomb, isPowerUp);
+    handleFruit(f, bomb, isSuper);
   }
 
-  function handleFruit(f, bomb, isPowerUp) {
+  function handleFruit(f, bomb, isSuper) {
     let ps = {
       t: 0,
       l: 0,
@@ -173,13 +173,13 @@
     f.onclick = () => {
       if (hitAmount >= maxHit) return;
 
-      if (isPowerUp) {
-        onPowerUp = true;
+      if (isSuper) {
+        onSuper = true;
         document.getElementById("sc").style.color = "darkgreen";
         document.body.style.background = "lightgreen";
         clearTimeout(pwTimeout);
         pwTimeout = setTimeout(() => {
-          onPowerUp = false
+          onSuper = false
           document.getElementById("sc").style.color = "";
         }, 10000);
         pw();
@@ -188,7 +188,7 @@
         return;
       }
 
-      if (bomb && !isPowerUp) {
+      if (bomb && !isSuper) {
         bm();
 
         clearInterval(int);
@@ -202,7 +202,7 @@
           document.body.removeChild(f);
           document.body.style.background = "transparent";
 
-          if (onPowerUp) return;
+          if (onSuper) return;
         
           sc();
 
@@ -223,7 +223,7 @@
         f.style.left = ps.l + "px";
         f.style["z-index"] = 2;
         
-        if (fs > 150) {
+        if ((fs > 150) || onSuper) {
           f.onclick = null;
           f.style["z-index"] = 3;
           // hitAmount++
@@ -234,7 +234,7 @@
             document.body.style.background = "transparent";
           }, 50);
           
-          if (!onPowerUp)
+          if (!onSuper)
             for (let i = 0; i < 2; i++) newFruit(true); // drop 2 bombs
           return bm();
         }
@@ -246,11 +246,11 @@
         document.getElementById("score").innerText = score;
         document.getElementById("sc").style.visibility = "visible";
 
-        if ((score % 20) === 0) newFruit(true, true); // drop a star
+        if (!onSuper && (score % 20) === 0) newFruit(true, true); // drop a star
       }
       clearInterval(int);
       f.innerText = "☠️";
-      if (!isPowerUp) newFruit();
+      if (!isSuper) newFruit();
     }
   }
 
