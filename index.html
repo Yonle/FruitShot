@@ -107,7 +107,15 @@
   function newFruit(bomb, isSuper) {
     let f = document.createElement("span");
     f.innerText = bomb ? "💣" : fruits[Math.floor(Math.random() * fruits.length)];
-    if (isSuper) f.innerText = "🌟";
+    switch (isSuper) {
+      case true:
+        f.innerText = "🌟";
+        break;
+      case false:
+        sus();
+        f.innerText = "☢️";
+        break;
+    }
     f.style.position = "fixed";
     f.style.margin = 0;
     f.style.padding = 0;
@@ -169,8 +177,35 @@
       f.style.left = ps.l + "px";
       //stat.innerText = JSON.stringify(ps);
     }, 20);
-    
-    f.onclick = () => {
+
+    if (isSuper == false) {
+      f.onmouseover = () => {
+        bm();
+
+        clearInterval(int);
+        document.body.style.background = "orange";
+
+        f.style["font-size"] = "160px";
+        f.style.top = (ps.t-60) + "px";
+        f.style.left = (ps.l-60) + "px";
+        f.innerText = "💥";
+        setTimeout(_ => {
+          document.body.removeChild(f);
+          document.body.style.background = "transparent";
+
+          //if (onSuper) return;
+
+          sc();
+
+          window.onclick = null;
+          hitAmount = maxHit;
+          document.documentElement.style.background = "black";
+          document.getElementById("gameover").style.visibility = "visible";
+        }, 50);
+
+        return;
+      }
+    } else f.onclick = () => {
       if (hitAmount >= maxHit) return;
 
       if (isSuper) {
@@ -246,7 +281,10 @@
         document.getElementById("score").innerText = score;
         document.getElementById("sc").style.visibility = "visible";
 
+        f.style["z-index"] = 2;
+
         if (!onSuper && (score % 20) === 0) newFruit(true, true); // drop a star
+        if ((score % 50) === 0) newFruit(true, false); // drop the nuke
       }
       clearInterval(int);
       f.innerText = "☠️";
