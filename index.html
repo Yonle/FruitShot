@@ -81,15 +81,15 @@
   let rn = rn => (Math.floor(Math.random() * 10) + 1);
   let fruits = ["🍇", "🍈", "🍉", "🍊", "🍋", "🍌", "🍍", "🍎", "🍏", "🍒", "🍓", "🥝", "🍅", "🥥", "🥑", "🍆", "🥔", "🥕", "🌽", "🌶", "️🥒", "🥦", "🍄", "🥜", "🌰"];
   let firstTime = 1;
-  let hitAmount = 0;
-  let maxHit = 5;
+  let bombed = false;
   let score = 0;
   let onSuper = false;
   let pwTimeout = null;
   //let rn = rn => 1;
   
   let desc = document.getElementById("desc");
-  window.onclick = (p) => {
+  window.addEventListener("click", p => {
+    if (bombed) return;
     if (firstTime) {
       loadAud();
       firstTime = false;
@@ -102,7 +102,7 @@
     setTimeout(() => {
       desc.style.visibility = "hidden";
     }, 20);
-  }
+  });
   
   function newFruit(bomb, isSuper) {
     let f = document.createElement("span");
@@ -148,7 +148,7 @@
     //let stat = document.createElement('p');
     //document.body.appendChild(stat);
     let int = setInterval(() => {
-      if (hitAmount >= maxHit) {
+      if (bombed) {
         document.body.removeChild(f);
         return clearInterval(int);
       }
@@ -179,7 +179,7 @@
     }, 20);
 
     if (isSuper == false) {
-      f.onmouseover = () => {
+      f.addEventListener("mouseover", () => {
         bm();
 
         clearInterval(int);
@@ -193,20 +193,17 @@
           document.body.removeChild(f);
           document.body.style.background = "transparent";
 
-          //if (onSuper) return;
-
           sc();
 
-          window.onclick = null;
-          hitAmount = maxHit;
+          bombed = true;
           document.documentElement.style.background = "black";
           document.getElementById("gameover").style.visibility = "visible";
         }, 20);
 
         return;
-      }
-    } else f.onclick = () => {
-      if (hitAmount >= maxHit) return;
+      });
+    } else f.addEventListener("click", () => {
+      if (bombed) return;
 
       if (isSuper) {
         onSuper = true;
@@ -241,8 +238,7 @@
         
           sc();
 
-          window.onclick = null;
-          hitAmount = maxHit;
+          bombed = true;
           document.documentElement.style.background = "black";
           document.getElementById("gameover").style.visibility = "visible";
         }, 20);
@@ -259,9 +255,7 @@
         f.style["z-index"] = 2;
         
         if ((fs > 150) || onSuper) {
-          f.onclick = null;
           f.style["z-index"] = 3;
-          // hitAmount++
           document.body.style.background = "orange";
           f.innerText = "💥";
           setTimeout(_ => {
@@ -289,7 +283,7 @@
       clearInterval(int);
       f.innerText = "☠️";
       if (!isSuper) newFruit();
-    }
+    });
   }
 
   for (let i = 0; i < 10; i++) newFruit();
