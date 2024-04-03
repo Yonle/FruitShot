@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <title>FruitShot</title>
-  <meta name="description" content="Fruit shooting HTML5 game">
+  <meta name="description" content="HTML5 Fruit shooting game">
 </head>
 <style>
   * {
@@ -63,7 +63,13 @@
   <!--- <h1 id="fruit">🍌</h1> --->
   <div id="loading">
     <h1>FruitShot</h1>
-    <p>Fruit shooting HTML5 game</p><br>
+    <p>HTML5 Fruit shooting game</p><br>
+    <ul>
+      <li>Shoot as many fruits as you can</li>
+      <li>Shot 🌟 to shoot 💣</li>
+      <li>Don't shoot 💣 without shooting 🌟!</li>
+      <li>Don't shoot or even hover ☢️!</li>
+    </ul><br>
     <p><span id="loadedaudios">0</span>/<span id="availableaudios">0</span> Loading audios....</p>
   </div>
   <span id="desc">💥</span>
@@ -86,6 +92,7 @@
   let onSuper = false;
   let pwTimeout = null;
   let runners = new Set();
+  let rInt = null;
   //let rn = rn => 1;
   
   let desc = document.getElementById("desc");
@@ -153,6 +160,7 @@
           au.sc();
 
           bombed = true;
+          clearInterval(rInt);
           document.documentElement.style.background = "black";
           document.getElementById("gameover").style.visibility = "visible";
         }, 40);
@@ -168,7 +176,7 @@
         document.body.style.background = "lightgreen";
         clearTimeout(pwTimeout);
         pwTimeout = setTimeout(() => {
-          onSuper = false
+          onSuper = false;
           document.getElementById("sc").style.color = "";
           document.body.style.background = "transparent";
         }, 10000);
@@ -197,6 +205,7 @@
           au.sc();
 
           bombed = true;
+          clearInterval(rInt);
           document.documentElement.style.background = "black";
           document.getElementById("gameover").style.visibility = "visible";
         }, 40);
@@ -257,43 +266,39 @@
       }, 30);
     });
     for (let i = 0; i < 10; i++) newFruit();
+
+    rInt = setInterval(() => {
+      if (!runners.size) return clearInterval(rInt);
+      for (const fr of runners) {
+        if (bombed) break;
+
+        if (fr.ps.t >= window.innerHeight) {
+          fr.ct.t = 1;
+          fr.ps.sp.t = rn();
+        } else if (fr.ps.t <= 0) {
+          fr.ct.t = 0;
+          fr.ps.sp.t = rn();
+        }
+
+        if (fr.ps.l >= window.innerWidth) {
+          fr.ct.l = 1;
+          fr.ps.sp.l = rn();
+        } else if (fr.ps.l <= 0) {
+          fr.ct.l = 0;
+          fr.ps.sp.l = rn();
+        }
+
+        if (fr.ct.t) fr.ps.t = fr.ps.t - fr.ps.sp.t;
+        else fr.ps.t = fr.ps.t + fr.ps.sp.t;
+        if (fr.ct.l) fr.ps.l = fr.ps.l - fr.ps.sp.l;
+        else fr.ps.l = fr.ps.l + fr.ps.sp.l;
+
+        fr.f.style.top = fr.ps.t + "px";
+        fr.f.style.left = fr.ps.l + "px";
+        //stat.innerText = JSON.stringify(ps);
+      }
+    }, 20);
   });
-
-  let rInt = setInterval(() => {
-    if (!runners) return clearInterval(rInt);
-    for (const fr of runners) {
-      if (bombed) {
-        document.body.removeChild(fr.f);
-        runners.delete(fr);
-        return clearInterval(rInt);
-      }
-
-      if (fr.ps.t >= window.innerHeight) {
-        fr.ct.t = 1;
-        fr.ps.sp.t = rn();
-      } else if (fr.ps.t <= 0) {
-        fr.ct.t = 0;
-        fr.ps.sp.t = rn();
-      }
-
-      if (fr.ps.l >= window.innerWidth) {
-        fr.ct.l = 1;
-        fr.ps.sp.l = rn();
-      } else if (fr.ps.l <= 0) {
-        fr.ct.l = 0;
-        fr.ps.sp.l = rn();
-      }
-
-      if (fr.ct.t) fr.ps.t = fr.ps.t - fr.ps.sp.t;
-      else fr.ps.t = fr.ps.t + fr.ps.sp.t;
-      if (fr.ct.l) fr.ps.l = fr.ps.l - fr.ps.sp.l;
-      else fr.ps.l = fr.ps.l + fr.ps.sp.l;
-
-      fr.f.style.top = fr.ps.t + "px";
-      fr.f.style.left = fr.ps.l + "px";
-      //stat.innerText = JSON.stringify(ps);
-    }
-  }, 20);
 </script>
 
 </html>

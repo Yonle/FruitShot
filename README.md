@@ -1,7 +1,5 @@
 # Fruit Shotting
-An small HTML5 game that has the following goal:
-- Shot the fruits
-- Don't touch the bomb
+HTML5 Fruit shooting game
 
 ## How to play
 Tap the fruit.
