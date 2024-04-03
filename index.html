@@ -76,11 +76,10 @@
     <a style="z-index: 3; color: black; position: fixed; bottom: 10px; right: 10px;" href="https://github.com/Yonle/FruitShot">Source code</a>
   </div>
 </body>
-<script src="main.js"></script>
+<script src="audio.js"></script>
 <script>
   let rn = rn => (Math.floor(Math.random() * 10) + 1);
   let fruits = ["🍇", "🍈", "🍉", "🍊", "🍋", "🍌", "🍍", "🍎", "🍏", "🍒", "🍓", "🥝", "🍅", "🥥", "🥑", "🍆", "🥔", "🥕", "🌽", "🌶", "️🥒", "🥦", "🍄", "🥜", "🌰"];
-  let firstTime = 1;
   let bombed = false;
   let score = 0;
   let onSuper = false;
@@ -91,18 +90,13 @@
   let desc = document.getElementById("desc");
   window.addEventListener("pointerdown", p => {
     if (bombed) return;
-    if (firstTime) {
-      loadAud();
-      firstTime = false;
-      return;
-    }
-    sh();
+    au.sh();
     desc.style.visibility = "visible";
     desc.style.top = (p.clientY-30) + "px";
     desc.style.left = (p.clientX-30) + "px";
     setTimeout(() => {
       desc.style.visibility = "hidden";
-    }, 20);
+    }, 30);
   });
   
   function newFruit(bomb, isSuper) {
@@ -113,7 +107,7 @@
         f.innerText = "🌟";
         break;
       case false:
-        sus();
+        au.sus();
         f.innerText = "☢️";
         break;
     }
@@ -152,8 +146,8 @@
     runners.add(fr);
 
     if (isSuper == false) {
-      f.addEventListener("mouseover", () => {
-        bm();
+      f.addEventListener("pointerover", () => {
+        au.bm();
 
         runners.delete(fr);
         document.body.style.background = "orange";
@@ -164,14 +158,13 @@
         f.innerText = "💥";
         setTimeout(_ => {
           document.body.removeChild(f);
-          document.body.style.background = "transparent";
 
-          sc();
+          au.sc();
 
           bombed = true;
           document.documentElement.style.background = "black";
           document.getElementById("gameover").style.visibility = "visible";
-        }, 20);
+        }, 40);
 
         return;
       });
@@ -186,15 +179,16 @@
         pwTimeout = setTimeout(() => {
           onSuper = false
           document.getElementById("sc").style.color = "";
+          document.body.style.background = "transparent";
         }, 10000);
-        pw();
+        au.pw();
 
         document.body.removeChild(f);
         return;
       }
 
       if (bomb && !isSuper) {
-        bm();
+        au.bm();
 
         runners.delete(fr);
         document.body.style.background = "orange";
@@ -205,16 +199,16 @@
         f.innerText = "💥";
         setTimeout(_ => {
           document.body.removeChild(f);
-          document.body.style.background = "transparent";
+          document.body.style.background = onSuper ? "lightgreen" : "transparent";
 
           if (onSuper) return;
         
-          sc();
+          au.sc();
 
           bombed = true;
           document.documentElement.style.background = "black";
           document.getElementById("gameover").style.visibility = "visible";
-        }, 20);
+        }, 40);
 
         return;
       }
@@ -233,16 +227,16 @@
           f.innerText = "💥";
           setTimeout(_ => {
             document.body.removeChild(f);
-            document.body.style.background = "transparent";
-          }, 20);
+            document.body.style.background = onSuper ? "lightgreen" : "transparent";
+          }, 40);
           
           if (!onSuper)
             for (let i = 0; i < 2; i++) newFruit(true); // drop 2 bombs
-          return bm();
+          return au.bm();
         }
-        
-        ht();
-        return f.style["font-size"] = fs + "px";
+
+        f.style["font-size"] = fs + "px";
+        return au.ht();
       } else {
         score++;
         document.getElementById("score").innerText = score;
@@ -259,7 +253,9 @@
     });
   }
 
-  for (let i = 0; i < 10; i++) newFruit();
+  loadAud().then(_ => {
+    for (let i = 0; i < 10; i++) newFruit();
+  });
 
   let rInt = setInterval(() => {
     if (!runners) return clearInterval(rInt);
