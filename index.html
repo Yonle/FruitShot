@@ -85,6 +85,7 @@
   let score = 0;
   let onSuper = false;
   let pwTimeout = null;
+  let runners = new Set();
   //let rn = rn => 1;
   
   let desc = document.getElementById("desc");
@@ -147,42 +148,14 @@
 
     //let stat = document.createElement('p');
     //document.body.appendChild(stat);
-    let int = setInterval(() => {
-      if (bombed) {
-        document.body.removeChild(f);
-        return clearInterval(int);
-      }
-      if (ps.t >= window.innerHeight) {
-        ct.t = 1;
-        ps.sp.t = rn();
-      } else if (ps.t <= 0) {
-        ct.t = 0;
-        ps.sp.t = rn();
-      }
-
-      if (ps.l >= window.innerWidth) {
-        ct.l = 1;
-        ps.sp.l = rn();
-      } else if (ps.l <= 0) {
-        ct.l = 0;
-        ps.sp.l = rn();
-      }
-
-      if (ct.t) ps.t = ps.t - ps.sp.t;
-      else ps.t = ps.t + ps.sp.t;
-      if (ct.l) ps.l = ps.l - ps.sp.l;
-      else ps.l = ps.l + ps.sp.l;
-
-      f.style.top = ps.t + "px";
-      f.style.left = ps.l + "px";
-      //stat.innerText = JSON.stringify(ps);
-    }, 20);
+    let fr = { ps, ct, f };
+    runners.add(fr);
 
     if (isSuper == false) {
       f.addEventListener("mouseover", () => {
         bm();
 
-        clearInterval(int);
+        runners.delete(fr);
         document.body.style.background = "orange";
 
         f.style["font-size"] = "160px";
@@ -223,7 +196,7 @@
       if (bomb && !isSuper) {
         bm();
 
-        clearInterval(int);
+        runners.delete(fr);
         document.body.style.background = "orange";
 
         f.style["font-size"] = "160px";
@@ -280,13 +253,49 @@
         if (!onSuper && (score % 20) === 0) newFruit(true, true); // drop a star
         if ((score % 50) === 0) newFruit(true, false); // drop the nuke
       }
-      clearInterval(int);
+      runners.delete(fr);
       f.innerText = "☠️";
       if (!isSuper) newFruit();
     });
   }
 
   for (let i = 0; i < 10; i++) newFruit();
+
+  let rInt = setInterval(() => {
+    if (!runners) return clearInterval(rInt);
+    for (const fr of runners) {
+      if (bombed) {
+        document.body.removeChild(fr.f);
+        runners.delete(fr);
+        return clearInterval(rInt);
+      }
+
+      if (fr.ps.t >= window.innerHeight) {
+        fr.ct.t = 1;
+        fr.ps.sp.t = rn();
+      } else if (fr.ps.t <= 0) {
+        fr.ct.t = 0;
+        fr.ps.sp.t = rn();
+      }
+
+      if (fr.ps.l >= window.innerWidth) {
+        fr.ct.l = 1;
+        fr.ps.sp.l = rn();
+      } else if (fr.ps.l <= 0) {
+        fr.ct.l = 0;
+        fr.ps.sp.l = rn();
+      }
+
+      if (fr.ct.t) fr.ps.t = fr.ps.t - fr.ps.sp.t;
+      else fr.ps.t = fr.ps.t + fr.ps.sp.t;
+      if (fr.ct.l) fr.ps.l = fr.ps.l - fr.ps.sp.l;
+      else fr.ps.l = fr.ps.l + fr.ps.sp.l;
+
+      fr.f.style.top = fr.ps.t + "px";
+      fr.f.style.left = fr.ps.l + "px";
+      //stat.innerText = JSON.stringify(ps);
+    }
+  }, 20);
 </script>
 
 </html>
