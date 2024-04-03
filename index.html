@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title></title>
+  <title>FruitShot</title>
+  <meta name="description" content="Fruit shooting HTML5 game">
 </head>
 <style>
   * {
@@ -17,7 +18,6 @@
     font-family: sans-serif;
   }
 
-  #fruit,
   p, h1 {
     padding: 0;
     margin: 0;
@@ -32,14 +32,6 @@
     user-select: none;
     --moz-user-select: none;
     visibility: hidden;
-  }
-
-  .fruit {
-    position: fixed;
-    animation-timing-function: ease;
-    animation-iteration-count: infinite;
-    animation-duration: 1s;
-    font-size: 50px;
   }
   
   #gameover {
@@ -60,11 +52,20 @@
   #sc {
     visibility: hidden;
   }
+
+  #loading {
+    position: fixed;
+  }
 </style>
 
 <body>
   <!-- <button style="position: fixed; top: 0; left: 0; border: solid 1px; background: white;" onclick="newFruit()">New Fruit</button><span style="position: fixed; top: 0; left: 75px;">Click the fruits!</span> --->
   <!--- <h1 id="fruit">🍌</h1> --->
+  <div id="loading">
+    <h1>FruitShot</h1>
+    <p>Fruit shooting HTML5 game</p><br>
+    <p>Loading audio....</p>
+  </div>
   <span id="desc">💥</span>
   <div id="gameover">
     <div id="text">
@@ -88,16 +89,6 @@
   //let rn = rn => 1;
   
   let desc = document.getElementById("desc");
-  window.addEventListener("pointerdown", p => {
-    if (bombed) return;
-    au.sh();
-    desc.style.visibility = "visible";
-    desc.style.top = (p.clientY-30) + "px";
-    desc.style.left = (p.clientX-30) + "px";
-    setTimeout(() => {
-      desc.style.visibility = "hidden";
-    }, 30);
-  });
   
   function newFruit(bomb, isSuper) {
     let f = document.createElement("span");
@@ -254,6 +245,17 @@
   }
 
   loadAud().then(_ => {
+    document.getElementById("loading").style.visibility = "hidden";
+    window.addEventListener("pointerdown", p => {
+      if (bombed) return;
+      au.sh();
+      desc.style.visibility = "visible";
+      desc.style.top = (p.clientY-30) + "px";
+      desc.style.left = (p.clientX-30) + "px";
+      setTimeout(() => {
+        desc.style.visibility = "hidden";
+      }, 30);
+    });
     for (let i = 0; i < 10; i++) newFruit();
   });
 
