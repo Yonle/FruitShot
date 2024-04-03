@@ -17,7 +17,11 @@ async function loadAud() {
       a.src = b;
       a.play();
     }
+
+    document.getElementById("loadedaudios").innerText++;
   }
 
   return true;
 }
+
+document.getElementById("availableaudios").innerText = Object.keys(au).length;
