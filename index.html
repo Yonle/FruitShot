@@ -89,7 +89,7 @@
   //let rn = rn => 1;
   
   let desc = document.getElementById("desc");
-  window.addEventListener("click", p => {
+  window.addEventListener("mousedown", p => {
     if (bombed) return;
     if (firstTime) {
       loadAud();
@@ -175,7 +175,7 @@
 
         return;
       });
-    } else f.addEventListener("click", () => {
+    } else f.addEventListener("mousedown", () => {
       if (bombed) return;
 
       if (isSuper) {
