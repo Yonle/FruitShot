@@ -139,6 +139,7 @@
     }
     
     let fs = 10;
+    let fruitShotted = false;
 
     //let stat = document.createElement('p');
     //document.body.appendChild(stat);
@@ -239,7 +240,8 @@
 
         f.style["font-size"] = fs + "px";
         return au.ht();
-      } else {
+      } else if (!fruitShotted) {
+        fruitShotted = true;
         score++;
         document.getElementById("score").innerText = score;
         document.getElementById("sc").style.visibility = "visible";
