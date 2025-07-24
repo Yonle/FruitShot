@@ -58,6 +58,13 @@
   #loading {
     position: fixed;
   }
+
+  #warning {
+    padding: 10px;
+    border: solid 5px red;
+    color: black;
+    background: yellow;
+  }
 </style>
 
 <body>
@@ -72,7 +79,10 @@
       <li>Don't shoot 💣 without shooting 🌟!</li>
       <li>Don't shoot or even hover ☢️!</li>
     </ul><br>
-    <p><span id="loadedaudios">0</span>/<span id="availableaudios">0</span> Loading audios....</p>
+    <div id="warning">
+      <p><strong>Warning:</strong> Contains lightning effects.<br>If you're prone to seizures, <strong>do not proceed.</strong></p>
+    </div>
+    <p><span id="loadedaudios">0</span>/<span id="availableaudios">0</span> Audios loaded....</p>
   </div>
   <span id="desc">💥</span>
   <div id="gameover">
