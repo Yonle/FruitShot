@@ -2,6 +2,8 @@ let rn = rn => (Math.floor(Math.random() * 10) + 1);
 let fruits = ["🍇", "🍈", "🍉", "🍊", "🍋", "🍌", "🍍", "🍎", "🍏", "🍒", "🍓", "🥝", "🍅", "🥥", "🥑", "🍆", "🥔", "🥕", "🌽", "🌶", "️🥒", "🥦", "🍄", "🥜", "🌰"];
 let bombed = false;
 let score = 0;
+let skullscore = 0;
+let bombscore = 0;
 let onSuper = false;
 let pwTimeout = null;
 let runners = new Set();
@@ -59,6 +61,7 @@ function handleFruit(f, bomb, isSuper) {
   runners.add(fr);
   
   if (isSuper == false) {
+    // nuke
     f.addEventListener("pointerover", () => {
       au.bm();
       
@@ -86,6 +89,7 @@ function handleFruit(f, bomb, isSuper) {
     if (bombed) return;
     
     if (isSuper) {
+      // star
       onSuper = true;
       document.getElementById("sc").style.color = "green";
       document.body.style.background = "lightgreen";
@@ -103,15 +107,19 @@ function handleFruit(f, bomb, isSuper) {
     }
     
     if (bomb && !isSuper) {
+      // bomb
       au.bm();
       
       runners.delete(fr);
       document.body.style.background = "orange";
-      
+
       f.style["font-size"] = "160px";
       f.style.top = (ps.t - 60) + "px";
       f.style.left = (ps.l - 60) + "px";
       f.innerText = "💥";
+
+      bombscore++
+      document.getElementById("bombscore").innerText = bombscore;
       setTimeout(_ => {
         document.body.removeChild(f);
         document.body.style.background = onSuper ? "lightgreen" : "transparent";
@@ -131,6 +139,7 @@ function handleFruit(f, bomb, isSuper) {
     
     fs += 30;
     if (f.innerText === "☠️") {
+      // skull
       ps.t -= 20;
       ps.l -= 20;
       f.style.top = ps.t + "px";
@@ -141,6 +150,8 @@ function handleFruit(f, bomb, isSuper) {
         f.style["z-index"] = 3;
         document.body.style.background = "orange";
         f.innerText = "💥";
+        skullscore++
+        document.getElementById("skullscore").innerText = skullscore;
         setTimeout(_ => {
           document.body.removeChild(f);
           document.body.style.background = onSuper ? "lightgreen" : "transparent";
@@ -154,6 +165,7 @@ function handleFruit(f, bomb, isSuper) {
       f.style["font-size"] = fs + "px";
       return au.ht();
     } else if (!fruitShotted) {
+      // fruit
       fruitShotted = true;
       score++;
       document.getElementById("score").innerText = score;
