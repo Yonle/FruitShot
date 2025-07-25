@@ -2,7 +2,14 @@
 HTML5 Fruit shooting game
 
 ## How to play
-Tap the fruit.
+- Shoot as many fruits as possible
+- Avoid bombs until you shoot a star
+- Avoid nuclear at all cost
+
+## Lore
+
+> *Every fruit you shoot is possessed. The skulls are the true form.*
+> *You were never harvesting fruit. You were liberating the curse.*
 
 ## License
 
